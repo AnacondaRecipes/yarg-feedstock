@@ -1,41 +1,49 @@
 {% set name = "yarg" %}
-{% set version = "0.1.9" %}
-{% set sha256 = "55695bf4d1e3e7f756496c36a69ba32c40d18f821e38f61d028f6049e5e15911" %}
+{% set version = "0.1.10" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://github.com/kura/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: b3b8126bf305951e40242eb87e621125a8cf697bcfa4db7e164f6679fcbe0af7
 
 build:
-  noarch: python
-  number: 1
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  skip: True  # [py<3 or py>312]
 
 requirements:
-  build:
+  host:
     - python
+    - pip
+    - wheel
     - setuptools
-
   run:
     - python
     - requests
 
 test:
-  imports:
+  source_files:
     - tests
+  imports:
     - yarg
+  commands:
+    - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -v tests
+  requires:
+    - pip
+    - pytest
 
 about:
   home: https://yarg.readthedocs.org/
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'A semi hard Cornish cheese, also queries PyPI (PyPI client)'
+  summary: A semi hard Cornish cheese, also queries PyPI (PyPI client)
+  description: A semi hard Cornish cheese, also queries PyPI. Built on top of requests, it’s easy to use and makes sense.
   dev_url: https://github.com/kura/yarg
   doc_url: https://yarg.readthedocs.io/
 
