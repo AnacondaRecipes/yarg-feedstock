@@ -12,7 +12,6 @@ source:
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: True  # [py<3 or py>312]
 
 requirements:
   host:
